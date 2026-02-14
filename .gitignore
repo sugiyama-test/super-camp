@@ -1,0 +1,20 @@
+# Dependencies
+frontend/node_modules/
+frontend/.next/
+backend/tmp/
+
+# Environment
+.env
+.env.local
+frontend/.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Build
+backend/bin/
