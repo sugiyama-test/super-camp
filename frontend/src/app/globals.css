@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+:root {
+  --camp-green: #2D5016;
+  --camp-brown: #8B4513;
+  --camp-orange: #D2691E;
+  --camp-cream: #FAEBD7;
+  --background: #FAEBD7;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  padding-bottom: 4rem;
+}
