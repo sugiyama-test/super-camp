@@ -28,6 +28,12 @@ func New(pool *pgxpool.Pool) *chi.Mux {
 	layoutRepo := repository.NewLayoutRepository(pool)
 	layoutHandler := handler.NewLayoutHandler(layoutRepo)
 
+	fireLogRepo := repository.NewFireLogRepository(pool)
+	fireLogHandler := handler.NewFireLogHandler(fireLogRepo)
+
+	mealPlanRepo := repository.NewMealPlanRepository(pool)
+	mealPlanHandler := handler.NewMealPlanHandler(mealPlanRepo)
+
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", handler.HealthCheck(pool))
 
@@ -50,6 +56,26 @@ func New(pool *pgxpool.Pool) *chi.Mux {
 				r.Get("/", layoutHandler.Get)
 				r.Put("/", layoutHandler.Update)
 				r.Delete("/", layoutHandler.Delete)
+			})
+		})
+
+		r.Route("/fire-logs", func(r chi.Router) {
+			r.Get("/", fireLogHandler.List)
+			r.Post("/", fireLogHandler.Create)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", fireLogHandler.Get)
+				r.Put("/", fireLogHandler.Update)
+				r.Delete("/", fireLogHandler.Delete)
+			})
+		})
+
+		r.Route("/meal-plans", func(r chi.Router) {
+			r.Get("/", mealPlanHandler.List)
+			r.Post("/", mealPlanHandler.Create)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", mealPlanHandler.Get)
+				r.Put("/", mealPlanHandler.Update)
+				r.Delete("/", mealPlanHandler.Delete)
 			})
 		})
 	})

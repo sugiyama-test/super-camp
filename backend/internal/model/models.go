@@ -47,6 +47,7 @@ type FireLog struct {
 	DurationMinutes int       `json:"duration_minutes"`
 	Notes           string    `json:"notes"`
 	Temperature     *float64  `json:"temperature,omitempty"`
+	CampsiteID      *int64    `json:"campsite_id,omitempty"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
