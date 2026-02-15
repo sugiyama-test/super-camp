@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Super Camp Frontend
 
-## Getting Started
+Next.js (App Router) で実装されたフロントエンド。
 
-First, run the development server:
+## 技術
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 (App Router, Turbopack)
+- TypeScript
+- Tailwind CSS v4
+- [Zustand](https://github.com/pmndrs/zustand) - 状態管理
+- [react-konva](https://konvajs.org/docs/react/) - キャンバス描画（レイアウトエディタ）
+
+## ディレクトリ構成
+
+```
+frontend/src/
+├── app/
+│   ├── layout.tsx              # ルートレイアウト（BottomTabBar含む）
+│   ├── page.tsx                # ホーム画面
+│   ├── globals.css             # グローバルCSS・テーマカラー
+│   ├── checklists/
+│   │   ├── page.tsx            # チェックリスト一覧
+│   │   └── [id]/page.tsx       # チェックリスト詳細・編集
+│   ├── layouts/
+│   │   ├── page.tsx            # レイアウト一覧
+│   │   └── [id]/page.tsx       # レイアウトエディタ（react-konva）
+│   ├── fire-logs/
+│   │   └── page.tsx            # 焚き火ログ（一覧+フォーム）
+│   └── meal-plans/
+│       └── page.tsx            # キャンプ飯プランナー（一覧+フォーム）
+├── components/
+│   ├── BottomTabBar.tsx        # 固定下部ナビゲーション
+│   ├── PageHeader.tsx          # 共通ヘッダー
+│   ├── ChecklistCard.tsx       # チェックリストカード
+│   ├── ChecklistItemRow.tsx    # チェックリストアイテム行
+│   ├── LayoutCanvas.tsx        # Konvaキャンバス
+│   └── LayoutItemPalette.tsx   # レイアウトアイテム選択パレット
+├── stores/
+│   ├── useChecklistStore.ts    # チェックリストストア
+│   ├── useLayoutStore.ts       # レイアウトストア
+│   ├── useFireLogStore.ts      # 焚き火ログストア
+│   ├── useMealPlanStore.ts     # キャンプ飯ストア
+│   └── useHealthStore.ts       # ヘルスチェックストア
+└── lib/
+    └── api.ts                  # API通信ユーティリティ
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## テーマカラー
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 変数 | 色 | 用途 |
+|------|-----|------|
+| `--camp-green` | #2D5016 | メインカラー（チェックリスト等） |
+| `--camp-brown` | #8B4513 | キャンプ飯 |
+| `--camp-orange` | #D2691E | 焚き火ログ |
+| `--camp-cream` | #FAEBD7 | 背景色 |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ローカル開発（Docker Compose外）
 
-## Learn More
+```bash
+npm install
+npm run dev    # http://localhost:3000
+npm run build  # 本番ビルド
+npm run lint   # ESLint
+```
 
-To learn more about Next.js, take a look at the following resources:
+環境変数: `NEXT_PUBLIC_API_URL=http://localhost:8081`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 状態管理パターン
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+各機能はZustandストアで管理。パターン:
 
-## Deploy on Vercel
+```typescript
+const useXxxStore = create<XxxState>((set, get) => ({
+  items: [],
+  loading: false,
+  fetchItems: async () => { ... },
+  createItem: async (data) => { ... },
+  updateItem: async (id, data) => { ... },
+  deleteItem: async (id) => { ... },
+}));
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+API通信は `lib/api.ts` の `apiFetch` を使用（204レスポンス対応済み）。
