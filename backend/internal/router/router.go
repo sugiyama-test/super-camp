@@ -25,6 +25,9 @@ func New(pool *pgxpool.Pool) *chi.Mux {
 	checklistRepo := repository.NewChecklistRepository(pool)
 	checklistHandler := handler.NewChecklistHandler(checklistRepo)
 
+	layoutRepo := repository.NewLayoutRepository(pool)
+	layoutHandler := handler.NewLayoutHandler(layoutRepo)
+
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", handler.HealthCheck(pool))
 
@@ -37,6 +40,16 @@ func New(pool *pgxpool.Pool) *chi.Mux {
 				r.Post("/items", checklistHandler.AddItem)
 				r.Put("/items/{itemID}", checklistHandler.UpdateItem)
 				r.Delete("/items/{itemID}", checklistHandler.DeleteItem)
+			})
+		})
+
+		r.Route("/layouts", func(r chi.Router) {
+			r.Get("/", layoutHandler.List)
+			r.Post("/", layoutHandler.Create)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", layoutHandler.Get)
+				r.Put("/", layoutHandler.Update)
+				r.Delete("/", layoutHandler.Delete)
 			})
 		})
 	})
