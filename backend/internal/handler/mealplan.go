@@ -12,10 +12,10 @@ import (
 )
 
 type MealPlanHandler struct {
-	repo *repository.MealPlanRepository
+	repo repository.MealPlanRepo
 }
 
-func NewMealPlanHandler(repo *repository.MealPlanRepository) *MealPlanHandler {
+func NewMealPlanHandler(repo repository.MealPlanRepo) *MealPlanHandler {
 	return &MealPlanHandler{repo: repo}
 }
 

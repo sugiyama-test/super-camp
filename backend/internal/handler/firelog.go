@@ -12,10 +12,10 @@ import (
 )
 
 type FireLogHandler struct {
-	repo *repository.FireLogRepository
+	repo repository.FireLogRepo
 }
 
-func NewFireLogHandler(repo *repository.FireLogRepository) *FireLogHandler {
+func NewFireLogHandler(repo repository.FireLogRepo) *FireLogHandler {
 	return &FireLogHandler{repo: repo}
 }
 

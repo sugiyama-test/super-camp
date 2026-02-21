@@ -1,4 +1,4 @@
-.PHONY: up down build logs migrate-up migrate-down health
+.PHONY: up down build logs migrate-up migrate-down health test-db-up test-db-migrate api-test-unit api-test-integration
 
 # Docker
 up:
@@ -29,7 +29,21 @@ migrate-up:
 migrate-down:
 	$(MIGRATE) -path /app/migrations -database "$(DB_URL)" down 1
 
-# Development
+# Testing
+TEST_DB_URL=postgres://supercamp:supercamp@localhost:5435/supercamp_test?sslmode=disable
+
+test-db-up:
+	docker compose up -d db-test
+
+test-db-migrate:
+	migrate -path backend/migrations -database "$(TEST_DB_URL)" up
+
+api-test-unit:
+	cd backend && go test ./internal/handler/...
+
+api-test-integration:
+	cd backend && TEST_DATABASE_URL="$(TEST_DB_URL)" go test ./internal/repository/... -tags=integration -count=1
+
 api-test:
 	cd backend && go test ./...
 

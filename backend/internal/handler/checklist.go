@@ -11,10 +11,10 @@ import (
 )
 
 type ChecklistHandler struct {
-	repo *repository.ChecklistRepository
+	repo repository.ChecklistRepo
 }
 
-func NewChecklistHandler(repo *repository.ChecklistRepository) *ChecklistHandler {
+func NewChecklistHandler(repo repository.ChecklistRepo) *ChecklistHandler {
 	return &ChecklistHandler{repo: repo}
 }
 

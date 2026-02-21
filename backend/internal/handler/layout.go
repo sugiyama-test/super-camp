@@ -11,10 +11,10 @@ import (
 )
 
 type LayoutHandler struct {
-	repo *repository.LayoutRepository
+	repo repository.LayoutRepo
 }
 
-func NewLayoutHandler(repo *repository.LayoutRepository) *LayoutHandler {
+func NewLayoutHandler(repo repository.LayoutRepo) *LayoutHandler {
 	return &LayoutHandler{repo: repo}
 }
 
