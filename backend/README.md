@@ -14,29 +14,39 @@ Go (Golang) で実装されたREST APIサーバー。
 
 ```
 backend/
-├── cmd/api/main.go          # エントリーポイント
+├── cmd/api/main.go              # エントリーポイント
 ├── internal/
-│   ├── config/config.go     # 環境変数読み込み
-│   ├── handler/             # HTTPハンドラー
-│   │   ├── health.go        # ヘルスチェック
-│   │   ├── checklist.go     # チェックリストAPI
-│   │   ├── layout.go        # レイアウトAPI
-│   │   ├── firelog.go       # 焚き火ログAPI
-│   │   └── mealplan.go      # キャンプ飯API
-│   ├── model/models.go      # データモデル
-│   ├── repository/          # DB操作
+│   ├── config/config.go         # 環境変数読み込み
+│   ├── handler/                 # HTTPハンドラー
+│   │   ├── health.go            # ヘルスチェック
+│   │   ├── checklist.go         # チェックリストAPI
+│   │   ├── checklist_test.go    # チェックリストハンドラーテスト
+│   │   ├── layout.go            # レイアウトAPI
+│   │   ├── layout_test.go       # レイアウトハンドラーテスト
+│   │   ├── firelog.go           # 焚き火ログAPI
+│   │   ├── firelog_test.go      # 焚き火ログハンドラーテスト
+│   │   ├── mealplan.go          # キャンプ飯API
+│   │   └── mealplan_test.go     # キャンプ飯ハンドラーテスト
+│   ├── model/models.go          # データモデル
+│   ├── repository/              # DB操作
+│   │   ├── interfaces.go        # リポジトリインターフェース定義
 │   │   ├── checklist.go
+│   │   ├── checklist_test.go    # チェックリストリポジトリテスト
 │   │   ├── layout.go
+│   │   ├── layout_test.go       # レイアウトリポジトリテスト
 │   │   ├── firelog.go
-│   │   └── mealplan.go
-│   └── router/router.go     # ルーティング定義
-├── migrations/              # DBマイグレーションファイル
+│   │   ├── firelog_test.go      # 焚き火ログリポジトリテスト
+│   │   ├── mealplan.go
+│   │   └── mealplan_test.go     # キャンプ飯リポジトリテスト
+│   ├── testutil/db.go           # テスト用DBセットアップユーティリティ
+│   └── router/router.go         # ルーティング定義
+├── migrations/                  # DBマイグレーションファイル
 │   ├── 000001_init_schema.up.sql
 │   ├── 000001_init_schema.down.sql
 │   ├── 000002_seed_user.up.sql
 │   └── 000002_seed_user.down.sql
 ├── Dockerfile
-├── .air.toml                # Airホットリロード設定
+├── .air.toml                    # Airホットリロード設定
 ├── go.mod
 └── go.sum
 ```
@@ -48,8 +58,9 @@ Router → Handler → Repository → PostgreSQL
 ```
 
 - **Handler**: HTTPリクエスト/レスポンスの処理、バリデーション
-- **Repository**: SQL実行、データ永続化
+- **Repository**: SQL実行、データ永続化（インターフェース経由で抽象化）
 - **Model**: データ構造体の定義
+- **TestUtil**: テスト用DBの接続・マイグレーション・クリーンアップ
 
 ## ローカル開発（Docker Compose外）
 
@@ -61,11 +72,43 @@ export PORT=8080
 # ビルド＆実行
 go run ./cmd/api
 
-# テスト
-go test ./...
-
 # ビルド確認
 go build ./...
+```
+
+## テスト
+
+### ユニットテスト（ハンドラー）
+
+モックリポジトリを使用してハンドラーの動作を検証。DBは不要。
+
+```bash
+go test ./internal/handler/...
+# または
+make api-test-unit
+```
+
+### 結合テスト（リポジトリ）
+
+テスト用PostgreSQLコンテナ（ポート5435）を使用して実際のDB操作を検証。
+
+```bash
+# 1. テスト用DBを起動
+make test-db-up
+
+# 2. マイグレーション適用
+make test-db-migrate
+
+# 3. 結合テスト実行
+make api-test-integration
+```
+
+### 全テスト実行
+
+```bash
+go test ./...
+# または
+make api-test
 ```
 
 ## DB スキーマ

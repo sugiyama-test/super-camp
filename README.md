@@ -27,8 +27,9 @@
 super-camp/
 ├── frontend/          # Next.js フロントエンド
 ├── backend/           # Go バックエンド
-├── docker-compose.yml # 開発環境定義
-└── Makefile           # 開発用コマンド
+├── docker-compose.yml # 開発環境定義（DB, API, Frontend, テストDB）
+├── Makefile           # 開発用コマンド
+└── .env.example       # 環境変数テンプレート
 ```
 
 ## セットアップ
@@ -60,14 +61,29 @@ make health
 ### よく使うコマンド
 
 ```bash
-make up          # サービス起動
-make down        # サービス停止
-make logs        # 全ログ表示
-make logs-api    # APIログのみ
-make logs-frontend # フロントエンドログのみ
-make migrate-up  # マイグレーション適用
-make migrate-down # マイグレーション1つ戻す
-make health      # ヘルスチェック
+# Docker
+make up              # サービス起動
+make up-build        # ビルドして起動
+make down            # サービス停止
+make logs            # 全ログ表示
+make logs-api        # APIログのみ
+make logs-frontend   # フロントエンドログのみ
+
+# マイグレーション
+make migrate-up      # マイグレーション適用
+make migrate-down    # マイグレーション1つ戻す
+
+# テスト
+make test-db-up      # テスト用DB起動
+make test-db-migrate # テスト用DBにマイグレーション適用
+make api-test        # バックエンド全テスト実行
+make api-test-unit   # ハンドラーのユニットテスト
+make api-test-integration  # リポジトリの結合テスト
+make frontend-lint   # フロントエンドLint
+make frontend-build  # フロントエンドビルド
+
+# その他
+make health          # ヘルスチェック
 ```
 
 ## API エンドポイント
@@ -109,6 +125,20 @@ make health      # ヘルスチェック
 | GET | `/api/meal-plans/{id}` | 詳細 |
 | PUT | `/api/meal-plans/{id}` | 更新 |
 | DELETE | `/api/meal-plans/{id}` | 削除 |
+
+## テスト
+
+バックエンドにはハンドラーとリポジトリの両方にテストを実装済み。
+
+- **ユニットテスト**: ハンドラー層のテスト（モックリポジトリ使用）
+- **結合テスト**: リポジトリ層のテスト（テスト用PostgreSQLコンテナ使用、ポート5435）
+
+```bash
+# テスト用DB起動 → マイグレーション → テスト実行
+make test-db-up
+make test-db-migrate
+make api-test
+```
 
 ## 備考
 
