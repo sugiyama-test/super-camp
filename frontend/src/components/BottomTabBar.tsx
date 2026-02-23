@@ -9,6 +9,8 @@ const tabs = [
   { href: "/layouts", label: "レイアウト", icon: "🗺" },
   { href: "/fire-logs", label: "焚き火", icon: "🔥" },
   { href: "/meal-plans", label: "キャンプ飯", icon: "🍳" },
+  { href: "/gears", label: "ギア", icon: "🎒" },
+  { href: "/campsites", label: "キャンプ場", icon: "⛺" },
 ];
 
 export function BottomTabBar() {

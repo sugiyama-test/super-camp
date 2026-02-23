@@ -36,6 +36,20 @@ export default function Home() {
           <span className="text-3xl">🍳</span>
           <span className="text-sm font-medium text-gray-700">キャンプ飯プランナー</span>
         </a>
+        <a
+          href="/gears"
+          className="flex flex-col items-center gap-2 rounded-xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <span className="text-3xl">🎒</span>
+          <span className="text-sm font-medium text-gray-700">ギア管理</span>
+        </a>
+        <a
+          href="/campsites"
+          className="flex flex-col items-center gap-2 rounded-xl bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <span className="text-3xl">⛺</span>
+          <span className="text-sm font-medium text-gray-700">キャンプ場</span>
+        </a>
       </div>
     </div>
   );

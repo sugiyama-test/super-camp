@@ -39,3 +39,19 @@ type MealPlanRepo interface {
 	Update(ctx context.Context, id int64, title string, mealType string, servings int, notes string) (*model.MealPlan, error)
 	Delete(ctx context.Context, id int64) error
 }
+
+type GearRepo interface {
+	List(ctx context.Context, userID int64) ([]model.Gear, error)
+	Get(ctx context.Context, id int64) (*model.Gear, error)
+	Create(ctx context.Context, userID int64, name string, category string, brand string, weightGrams *float64, notes string) (*model.Gear, error)
+	Update(ctx context.Context, id int64, name string, category string, brand string, weightGrams *float64, notes string) (*model.Gear, error)
+	Delete(ctx context.Context, id int64) error
+}
+
+type CampsiteRepo interface {
+	List(ctx context.Context) ([]model.Campsite, error)
+	Get(ctx context.Context, id int64) (*model.Campsite, error)
+	Create(ctx context.Context, name string, address string, latitude *float64, longitude *float64, notes string) (*model.Campsite, error)
+	Update(ctx context.Context, id int64, name string, address string, latitude *float64, longitude *float64, notes string) (*model.Campsite, error)
+	Delete(ctx context.Context, id int64) error
+}

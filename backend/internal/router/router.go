@@ -34,6 +34,12 @@ func New(pool *pgxpool.Pool) *chi.Mux {
 	mealPlanRepo := repository.NewMealPlanRepository(pool)
 	mealPlanHandler := handler.NewMealPlanHandler(mealPlanRepo)
 
+	gearRepo := repository.NewGearRepository(pool)
+	gearHandler := handler.NewGearHandler(gearRepo)
+
+	campsiteRepo := repository.NewCampsiteRepository(pool)
+	campsiteHandler := handler.NewCampsiteHandler(campsiteRepo)
+
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/health", handler.HealthCheck(pool))
 
@@ -76,6 +82,26 @@ func New(pool *pgxpool.Pool) *chi.Mux {
 				r.Get("/", mealPlanHandler.Get)
 				r.Put("/", mealPlanHandler.Update)
 				r.Delete("/", mealPlanHandler.Delete)
+			})
+		})
+
+		r.Route("/gears", func(r chi.Router) {
+			r.Get("/", gearHandler.List)
+			r.Post("/", gearHandler.Create)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", gearHandler.Get)
+				r.Put("/", gearHandler.Update)
+				r.Delete("/", gearHandler.Delete)
+			})
+		})
+
+		r.Route("/campsites", func(r chi.Router) {
+			r.Get("/", campsiteHandler.List)
+			r.Post("/", campsiteHandler.Create)
+			r.Route("/{id}", func(r chi.Router) {
+				r.Get("/", campsiteHandler.Get)
+				r.Put("/", campsiteHandler.Update)
+				r.Delete("/", campsiteHandler.Delete)
 			})
 		})
 	})
