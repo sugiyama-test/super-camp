@@ -21,6 +21,7 @@ export default function GearsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<CreateGearData>(emptyForm);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchGears();
@@ -61,6 +62,15 @@ export default function GearsPage() {
     }
   };
 
+  const filteredGears = gears.filter((gear) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      gear.name.toLowerCase().includes(q) ||
+      (gear.brand ?? "").toLowerCase().includes(q)
+    );
+  });
+
   return (
     <div>
       <PageHeader
@@ -68,7 +78,17 @@ export default function GearsPage() {
         description="キャンプギアを管理しましょう"
       />
 
-      <div className="mt-6">
+      <div className="mt-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="ギア名・ブランドで検索..."
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--camp-orange)]"
+        />
+      </div>
+
+      <div className="mt-4">
         {!showForm ? (
           <button
             onClick={() => { setForm(emptyForm); setEditingId(null); setShowForm(true); }}
@@ -163,7 +183,12 @@ export default function GearsPage() {
             ギアが登録されていません。上のボタンから追加しましょう！
           </p>
         )}
-        {gears.map((gear) => (
+        {!loading && gears.length > 0 && filteredGears.length === 0 && (
+          <p className="text-center text-gray-400 text-sm mt-8">
+            「{searchQuery}」に一致するギアが見つかりません。
+          </p>
+        )}
+        {filteredGears.map((gear) => (
           <div key={gear.id} className="rounded-xl bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">

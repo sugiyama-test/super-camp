@@ -9,11 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/leaflet": "^1.9.21",
     "konva": "^10.2.0",
+    "leaflet": "^1.9.4",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-konva": "^19.2.2",
+    "react-leaflet": "^5.0.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
