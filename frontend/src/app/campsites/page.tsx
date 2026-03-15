@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/PageHeader";
 import { useCampsiteStore } from "@/stores/useCampsiteStore";
@@ -32,6 +32,8 @@ export default function CampsitesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsError, setGpsError] = useState("");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchCampsites();
@@ -44,13 +46,36 @@ export default function CampsitesPage() {
     setGpsError("");
   };
 
+  const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`,
+        { headers: { "Accept-Language": "ja" } }
+      );
+      const data = await res.json();
+      if (data.length > 0) {
+        return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+      }
+    } catch {}
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) return;
+
+    let submitForm = { ...form };
+    if (submitForm.latitude == null && submitForm.longitude == null && submitForm.address.trim()) {
+      const coords = await geocodeAddress(submitForm.address);
+      if (coords) {
+        submitForm = { ...submitForm, latitude: coords.lat, longitude: coords.lng };
+      }
+    }
+
     if (editingId) {
-      await updateCampsite(editingId, form);
+      await updateCampsite(editingId, submitForm);
     } else {
-      await createCampsite(form);
+      await createCampsite(submitForm);
     }
     resetForm();
   };
@@ -128,8 +153,8 @@ export default function CampsitesPage() {
       />
 
       {mappableCampsites.length > 0 && (
-        <div className="mt-4">
-          <CampsiteMap campsites={mappableCampsites} />
+        <div className="mt-4" ref={mapRef}>
+          <CampsiteMap campsites={mappableCampsites} selectedId={selectedId} />
         </div>
       )}
 
@@ -256,8 +281,18 @@ export default function CampsitesPage() {
         )}
         {filteredCampsites.map((campsite) => {
           const mapsUrl = buildMapsUrl(campsite);
+          const hasCords = campsite.latitude != null && campsite.longitude != null;
+          const isSelected = selectedId === campsite.id;
           return (
-            <div key={campsite.id} className="rounded-xl bg-white p-4 shadow-sm">
+            <div
+              key={campsite.id}
+              className={`rounded-xl bg-white p-4 shadow-sm transition-all ${hasCords ? "cursor-pointer" : ""} ${isSelected ? "ring-2 ring-[var(--camp-orange)]" : ""}`}
+              onClick={() => {
+                if (!hasCords) return;
+                setSelectedId(campsite.id);
+                mapRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <span className="text-sm font-medium text-gray-800">
